@@ -1,0 +1,94 @@
+<html>
+	<head>		 
+		<script id="vertex" type="x-shader/x-vertex"> 
+		    attribute vec2 aVertexPosition;
+		    void main(void) {
+		        gl_Position = vec4(aVertexPosition, 0.0, 1.0);
+				gl_PointSize = 10.0;
+		    }			
+		</script> 
+		
+		<script id="fragment" type="x-shader/x-fragment">
+			#ifdef GL_ES
+    		precision highp float;
+    		#endif
+			
+			uniform vec4 uColor;
+			
+			void main(void) {
+		        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+		    }
+		</script> 
+		
+		<script type="text/javascript">
+			var gl, canvas, program, vbuffer, aspect;
+			
+			function init(){
+				try {
+					canvas = document.getElementById("dotc");
+					gl = canvas.getContext("experimental-webgl");
+				} 
+				catch (e) {
+					console.log("Error initializing webgl: " + e);
+					return;
+				}
+				
+				aspect = canvas.width / canvas.height;
+				
+				gl.viewport(0, 0, canvas.width, canvas.height);	
+				gl.clearColor(0, 0, 0, 1);
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+								
+				var v = document.getElementById("vertex").firstChild.nodeValue;
+				var f = document.getElementById("fragment").firstChild.nodeValue;
+				
+				var vs = gl.createShader(gl.VERTEX_SHADER);
+				gl.shaderSource(vs, v);
+				gl.compileShader(vs);
+				
+				var fs = gl.createShader(gl.FRAGMENT_SHADER);
+				gl.shaderSource(fs, f);
+				gl.compileShader(fs);
+
+				program = gl.createProgram();
+				gl.attachShader(program, vs);
+				gl.attachShader(program, fs);
+				gl.linkProgram(program);
+				
+				vbuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+				
+				var vertices = [-1,1, 0,0, 1,-1];
+
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+				vbuffer.itemSize = 2;
+				vbuffer.numItems = vertices.length / vbuffer.itemSize;
+
+				gl.useProgram(program);
+
+				program.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
+				gl.enableVertexAttribArray(program.aVertexPosition);
+				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+				gl.vertexAttribPointer(program.aVertexPosition, vbuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+				gl.drawArrays(gl.POINT, 0, vbuffer.numItems);
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<canvas id="dotc" width="800" height="500">
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
