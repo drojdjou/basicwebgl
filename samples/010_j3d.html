@@ -3,6 +3,9 @@
 
 <script type="text/javascript" src="lib/j3d.js"></script>
 
+<script type="text/javascript" src="lib/textLocal.js"></script>
+<script type="text/javascript" src="lib/textLocalScene.js"></script>
+
 <script>
 	var mx, my = 0;
 	var jsonScene;
@@ -12,24 +15,19 @@
 	function init() {
 		engine = new J3D.Engine();
 		
-		J3D.Loader.loadJSON("lib/text.json", function(jsmeshes) { 
-			J3D.Loader.loadJSON("lib/textScene.json", function(jsscene) { 
-				jsonScene = jsscene;
-				J3D.Loader.parseJSONScene(jsscene, jsmeshes, engine);
+		J3D.Loader.parseJSONScene(TextScene, Text, engine);
 				
-				root = engine.scene.find("root");
+		root = engine.scene.find("root");
 				
-				rings[0] = engine.scene.find("root/ring1");
-				rings[1] = engine.scene.find("root/ring1/ring2");
-				rings[2] = engine.scene.find("root/ring1/ring2/ring3");
-				rings[3] = engine.scene.find("root/ring1/ring2/ring3/ring4");
-				rings[4] = engine.scene.find("root/ring1/ring2/ring3/ring4/ring5");
-				rings[5] = engine.scene.find("root/ring1/ring2/ring3/ring4/ring5/ring6");
-				rings[6] = engine.scene.find("root/ring1/ring2/ring3/ring4/ring5/ring6/ring7");
+		rings[0] = engine.scene.find("root/ring1");
+		rings[1] = engine.scene.find("root/ring1/ring2");
+		rings[2] = engine.scene.find("root/ring1/ring2/ring3");
+		rings[3] = engine.scene.find("root/ring1/ring2/ring3/ring4");
+		rings[4] = engine.scene.find("root/ring1/ring2/ring3/ring4/ring5");
+		rings[5] = engine.scene.find("root/ring1/ring2/ring3/ring4/ring5/ring6");
+		rings[6] = engine.scene.find("root/ring1/ring2/ring3/ring4/ring5/ring6/ring7");
 				
-				draw();
-			})
-		});
+		draw();
 
 		document.onmousemove = onMouseMove;
 	}

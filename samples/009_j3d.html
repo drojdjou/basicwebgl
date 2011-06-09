@@ -1,6 +1,7 @@
 <html> 
 <head> 
 <script type="text/javascript" src="lib/j3d.js"></script>
+<script type="text/javascript" src="lib/cubeLocal.js"></script>
 
 <script>
 	var engine, cube;
@@ -10,8 +11,8 @@
 		engine.setClearColor(J3D.Color.white);
 				
 		cube = new J3D.Transform();
-		J3D.Loader.loadJSON("http://localhost/basicwebgl/samples/lib/cube.json", function(j) {  cube.mesh = new J3D.Mesh(j); } );
-		//J3D.Loader.loadJSON("lib/cube.json", function(j) {  cube.mesh = new J3D.Mesh(j); } );				
+		//J3D.Loader.loadJSON("lib/cube.json", function(j) {  cube.mesh = new J3D.Mesh(j); } );			
+		cube.mesh = new J3D.Mesh(Cube);	
 		cube.renderer = new J3D.Normal2Color();		
 		
 		var camera = new J3D.Camera(45);
