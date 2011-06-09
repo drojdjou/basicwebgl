@@ -1,44 +1,28 @@
 <html>
 	<head>		 
-		<script id="vertex" type="x-shader/x-vertex"> 
+		<script id="vertex" type="x-shader"> 
 		    attribute vec2 aVertexPosition;
-		    void main(void) {
-		        gl_Position = vec4(aVertexPosition, 0.0, 1.0);
+		    void main() {
+		        gl_Position = vec4(aVertexPosition, 0, 1.0);
 				gl_PointSize = 10.0;
 		    }			
 		</script> 
 		
-		<script id="fragment" type="x-shader/x-fragment">
-			#ifdef GL_ES
-    		precision highp float;
-    		#endif
-			
-			uniform vec4 uColor;
-			
-			void main(void) {
-		        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+		<script id="fragment" type="x-shader">
+			void main() {
+		        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 		    }
 		</script> 
 		
 		<script type="text/javascript">
-			var gl, canvas, program, vbuffer, aspect;
-			
 			function init(){
-				try {
-					canvas = document.getElementById("dotc");
-					gl = canvas.getContext("experimental-webgl");
-				} 
-				catch (e) {
-					console.log("Error initializing webgl: " + e);
-					return;
-				}
-				
-				aspect = canvas.width / canvas.height;
-				
+				canvas = document.getElementById("mycanvas");
+				gl = canvas.getContext("experimental-webgl");
+
 				gl.viewport(0, 0, canvas.width, canvas.height);	
 				gl.clearColor(0, 0, 0, 1);
-				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-								
+				gl.clear(gl.COLOR_BUFFER_BIT);
+
 				var v = document.getElementById("vertex").firstChild.nodeValue;
 				var f = document.getElementById("fragment").firstChild.nodeValue;
 				
@@ -55,12 +39,19 @@
 				gl.attachShader(program, fs);
 				gl.linkProgram(program);
 				
-				vbuffer = gl.createBuffer();
-				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+				if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) 
+					console.log(gl.getShaderInfoLog(vs));
+					
+				if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) 
+					console.log(gl.getShaderInfoLog(fs));
 				
-				var vertices = [-1,1, 0,0, 1,-1];
-
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+				if (!gl.getProgramParameter(program, gl.LINK_STATUS)) 
+					console.log(gl.getProgramInfoLog(program));
+				
+				vbuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);			
+				var vertices = new Float32Array([-1,1, 0,0, 1,-1]);
+				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 				vbuffer.itemSize = 2;
 				vbuffer.numItems = vertices.length / vbuffer.itemSize;
 
@@ -76,7 +67,7 @@
 		</script>
 	</head>
 	<body onload="init()">
-		<canvas id="dotc" width="800" height="500">
+		<canvas id="mycanvas" width="800" height="500">
 	</body>
 </html>
 

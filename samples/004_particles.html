@@ -5,7 +5,6 @@
 		<script id="vertex" type="x-shader/x-vertex"> 
 			uniform mat4 mWorld;
 			uniform mat4 mProjection;
-		
 		    attribute vec3 aVertexPosition;
 			
 		    void main(void) {
@@ -18,11 +17,10 @@
 			#ifdef GL_ES
     		precision highp float;
     		#endif
-			
-			uniform vec4 uColor;
+
 			
 			void main(void) {
-		        gl_FragColor = uColor;
+		        gl_FragColor = vec4(1.0, 0.0, 0.0, 0.5);
 		    }
 		</script> 
 		
@@ -33,7 +31,7 @@
 			function init(){
 				try {
 					canvas = document.getElementById("dotc");
-					gl = canvas.getContext("experimental-webgl");
+					gl = canvas.getContext("experimental-webgl", { alpha: false });
 				} 
 				catch (e) {
 					console.log("Error initializing webgl: " + e);
@@ -48,7 +46,7 @@
 				mat4.translate(wmat, [0, 0, -400]);
 				
 				gl.viewport(0, 0, canvas.width, canvas.height);
-				gl.clearColor(0, 0, 0, 1);
+				gl.clearColor(0, 0, 0, 0.1);
 				
 				var v = document.getElementById("vertex").firstChild.nodeValue;
 				var f = document.getElementById("fragment").firstChild.nodeValue;
@@ -81,7 +79,6 @@
 				vbuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
 				
-				// POINTS
 				var vertices = [];
 				
 				for (var i = 0; i < 1000; i++) {
@@ -96,7 +93,6 @@
 				
 				
 				gl.useProgram(program);
-				program.uColor = gl.getUniformLocation(program, "uColor");
 				program.mWorld = gl.getUniformLocation(program, "mWorld");
 				program.mProjection = gl.getUniformLocation(program, "mProjection");
 				program.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
@@ -116,8 +112,6 @@
 				gl.uniformMatrix4fv(program.mWorld, false, wmat);
 				gl.uniformMatrix4fv(program.mProjection, false, pmat);
 				
-				gl.uniform4fv(program.uColor, [1, 0, 0, 1]);
-				
 				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
 				gl.vertexAttribPointer(program.aVertexPosition, vbuffer.itemSize, gl.FLOAT, false, 0, 0);
 
@@ -127,7 +121,7 @@
 			}
 		</script>
 	</head>
-	<body onload="init()">
+	<body onload="init()" bgcolor="#00ff00">
 		<canvas id="dotc" width="800" height="500">
 	</body>
 </html>

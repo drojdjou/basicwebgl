@@ -23,7 +23,7 @@
 			varying vec3 vColor;
 			
 			void main(void) {
-		        gl_FragColor = vec4(vColor, 1.0) + uColor;
+		        gl_FragColor = vec4(vColor, 1.0);// + uColor;
 		    }
 		</script> 
 		
@@ -66,22 +66,31 @@
 				gl.attachShader(program, fs);
 				gl.linkProgram(program);
 				
+				if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) 
+					console.log(gl.getShaderInfoLog(vs));
+					
+				if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) 
+					console.log(gl.getShaderInfoLog(fs));
+				
+				if (!gl.getProgramParameter(program, gl.LINK_STATUS)) 
+					console.log(gl.getProgramInfoLog(program));
+				
 				vbuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
 				
 				// TRIANGLE_STRIP
-				var vertices = [
-					 0.5, 0.5 * aspect,
-					 0.5,-0.5 * aspect, 
-					-0.5, 0.5 * aspect,  
-					-0.5,-0.5 * aspect
-				];
+				//var vertices = [
+				//	 0.5, 0.5 * aspect,
+				//	 0.5,-0.5 * aspect, 
+				//	-0.5, 0.5 * aspect,  
+				//	-0.5,-0.5 * aspect
+				//];
 
 				// TRIANGLES
-				//var vertices = [
-				//	-0.5, 0.5 * aspect,  0.5, 0.5 * aspect,  0.5,-0.5 * aspect, 
-				//	-0.5, 0.5 * aspect,  0.5,-0.5 * aspect, -0.5,-0.5 * aspect
-				//];
+				var vertices = [
+					-0.5, 0.5 * aspect,  0.5, 0.5 * aspect,  0.5,-0.5 * aspect, 
+					-0.5, 0.5 * aspect,  0.5,-0.5 * aspect, -0.5,-0.5 * aspect, 
+				];
 				
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 				vbuffer.itemSize = 2;
@@ -92,7 +101,7 @@
 
 				var colors = [
 					1,0,0,   0,1,0,   0,0,1,
-					1,1,0,   1,0,1,   0,1,1
+					1,0,0,   0,0,1,   0,1,1
 				];
 				
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
@@ -114,8 +123,8 @@
 				gl.bindBuffer(gl.ARRAY_BUFFER, cbuffer);
 				gl.vertexAttribPointer(program.aVertexColor, cbuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-				gl.drawArrays(gl.TRIANGLE_STRIP, 0, vbuffer.numItems);
-				//gl.drawArrays(gl.TRIANGLES, 0, vbuffer.numItems);
+				//gl.drawArrays(gl.TRIANGLE_STRIP, 0, vbuffer.numItems);
+				gl.drawArrays(gl.TRIANGLES, 0, vbuffer.numItems);
 			}
 		</script>
 	</head>

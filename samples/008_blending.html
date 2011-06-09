@@ -30,7 +30,8 @@
 			varying vec2 texCoord;
 			
 			void main() {
-		        gl_FragColor = texture2D(uTexture, texCoord);
+		        vec4 c = texture2D(uTexture, texCoord);
+				gl_FragColor = vec4(c.rgb, 0.3);
 		    }
 		</script> 
 		
@@ -137,6 +138,10 @@
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, texture);
 				gl.uniform1i(program.uTexture, 0);
+				
+				gl.disable(gl.DEPTH_TEST);
+				gl.enable(gl.BLEND);
+				gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 				draw();
 			}
@@ -159,7 +164,7 @@
 			}
 		</script>
 	</head>
-	<body onload="init()">
+	<body onload="init()" bgcolor="#000000">
 		<canvas id="dotc" width="800" height="500">
 	</body>
 </html>

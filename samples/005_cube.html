@@ -6,34 +6,24 @@
 		<script id="vertex" type="x-shader/x-vertex"> 
 			uniform mat4 mWorld;
 			uniform mat4 mProjection;
-		
 		    attribute vec3 aVertexPosition;
 			
-		    void main(void) {
+		    void main() {
 		        gl_Position = mProjection * mWorld * vec4(aVertexPosition, 1.0);
 				gl_PointSize = 2.0;
 		    }			
 		</script> 
 		
 		<script id="fragment" type="x-shader/x-fragment">
-			#ifdef GL_ES
-    		precision highp float;
-    		#endif
-			
-			uniform vec4 uColor;
-			
-			void main(void) {
-		        gl_FragColor = uColor;
+			void main() {
+		        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 		    }
 		</script> 
 		
 		<script type="text/javascript">
-			var gl, canvas, program, vbuffer, aspect;
-			var pmat, wmat;
-			
 			function init(){
 				try {
-					canvas = document.getElementById("dotc");
+					var canvas = document.getElementById("dotc");
 					gl = canvas.getContext("experimental-webgl");
 				} 
 				catch (e) {
@@ -41,15 +31,14 @@
 					return;
 				}
 				
-				aspect = canvas.width / canvas.height;	
-				pmat = mat4.perspective(60, aspect, 1, 1000);
-
-				wmat = mat4.create();
-				mat4.identity(wmat);
-				mat4.translate(wmat, [0, 0, -2]);
-				
 				gl.viewport(0, 0, canvas.width, canvas.height);
 				gl.clearColor(0, 0, 0, 1);
+				
+				mProjection = mat4.perspective(60, canvas.width / canvas.height, 1, 1000);
+
+				mWorld = mat4.create();
+				mat4.identity(mWorld);
+				mat4.translate(mWorld, [0, 0, -2]);
 				
 				var v = document.getElementById("vertex").firstChild.nodeValue;
 				var f = document.getElementById("fragment").firstChild.nodeValue;
@@ -89,32 +78,28 @@
         		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebuffer);
 				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(Cube.tris), gl.STATIC_DRAW);
         		ebuffer.numItems = Cube.tris.length;
-				
-				
+	
 				gl.useProgram(program);
-				program.uColor = gl.getUniformLocation(program, "uColor");
 				program.mWorld = gl.getUniformLocation(program, "mWorld");
 				program.mProjection = gl.getUniformLocation(program, "mProjection");
 				program.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
 				gl.enableVertexAttribArray(program.aVertexPosition);
-
+				
+				gl.uniformMatrix4fv(program.mProjection, false, mProjection);
+				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+				gl.vertexAttribPointer(program.aVertexPosition, vbuffer.itemSize, gl.FLOAT, false, 0, 0);
+				
 				draw();
 			}
 			
 			function draw() {
-				mat4.rotateY(wmat, 0.01);
+				mat4.rotateY(mWorld, 0.01);
 				
 				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 				
 				gl.useProgram(program);
 				
-				gl.uniformMatrix4fv(program.mWorld, false, wmat);
-				gl.uniformMatrix4fv(program.mProjection, false, pmat);
-				
-				gl.uniform4fv(program.uColor, [1, 0, 0, 1]);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
-				gl.vertexAttribPointer(program.aVertexPosition, vbuffer.itemSize, gl.FLOAT, false, 0, 0);
+				gl.uniformMatrix4fv(program.mWorld, false, mWorld);
 
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebuffer);
 		        gl.drawElements(gl.TRIANGLES, ebuffer.numItems, gl.UNSIGNED_SHORT, 0);

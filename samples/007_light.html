@@ -5,18 +5,25 @@
 		
 		<script id="vertex" type="x-shader/x-vertex"> 
 			uniform mat4 mWorld;
+			uniform mat3 mNormal;
 			uniform mat4 mProjection;
+			uniform vec3 uLightDir;
 		
 		    attribute vec3 aVertexPosition;
 			attribute vec2 aTexCoord;
+			attribute vec3 aVertexNormal;
 			
 			varying vec2 texCoord;
+			varying float light;
 			
 		    void main() {
 		        vec4 p = mProjection * mWorld * vec4(aVertexPosition, 1.0);
 				texCoord = aTexCoord;
+				
+				vec3 normal = mNormal * aVertexNormal;
+				light = max(dot(normal, normalize(uLightDir)), 0.0);
+
 				gl_Position = p;
-				gl_PointSize = 2.0;
 		    }			
 		</script> 
 		
@@ -28,15 +35,17 @@
 			uniform sampler2D uTexture;
 			
 			varying vec2 texCoord;
+			varying float light;
 			
 			void main() {
-		        gl_FragColor = texture2D(uTexture, texCoord);
+				vec4 c = texture2D(uTexture, texCoord);
+				gl_FragColor = vec4(c.rgb * light, c.a);
 		    }
 		</script> 
 		
 		<script type="text/javascript">
 			var gl, canvas, program, vbuffer, tbuffer, ebuffer, aspect, texture;
-			var pmat, wmat;
+			var pmat, wmat, nmat;
 			
 			function init(){
 				try {
@@ -54,6 +63,8 @@
 				wmat = mat4.create();
 				mat4.identity(wmat);
 				mat4.translate(wmat, [0, 0, -2]);
+				
+				nmat = mat3.create();
 				
 				gl.viewport(0, 0, canvas.width, canvas.height);
 				gl.clearColor(0, 0, 0, 1);
@@ -104,6 +115,12 @@
 				tbuffer.itemSize = 2;
 				tbuffer.numItems = Cube.uv.length / tbuffer.itemSize;
 				
+				nbuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, nbuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Cube.normals), gl.STATIC_DRAW);
+				nbuffer.itemSize = 3;
+				nbuffer.numItems = Cube.normals.length / nbuffer.itemSize;
+				
 				var image = new Image();
 				image.src = "img/wood.jpg";
 				
@@ -116,7 +133,9 @@
 
 				gl.useProgram(program);
 				program.mWorld = gl.getUniformLocation(program, "mWorld");
+				program.mNormal = gl.getUniformLocation(program, "mNormal");
 				program.mProjection = gl.getUniformLocation(program, "mProjection");
+				program.uLightDir = gl.getUniformLocation(program, "uLightDir");
 				
 				program.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
 				gl.enableVertexAttribArray(program.aVertexPosition);
@@ -124,15 +143,24 @@
 				program.aTexCoord = gl.getAttribLocation(program, "aTexCoord");
 				gl.enableVertexAttribArray(program.aTexCoord);
 				
+				program.aVertexNormal = gl.getAttribLocation(program, "aVertexNormal");
+				gl.enableVertexAttribArray(program.aVertexNormal);
+				
 				program.uTexture = gl.getUniformLocation(program, "uTexture");
 				
 				gl.uniformMatrix4fv(program.mProjection, false, pmat);
+				
+				gl.uniform3fv(program.uLightDir, [1, 0, 1]);
 	
 				gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
 				gl.vertexAttribPointer(program.aVertexPosition, vbuffer.itemSize, gl.FLOAT, false, 0, 0);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, tbuffer);
 				gl.vertexAttribPointer(program.aTexCoord, tbuffer.itemSize, gl.FLOAT, false, 0, 0);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, nbuffer);
+				gl.vertexAttribPointer(program.aVertexNormal, nbuffer.itemSize, gl.FLOAT, false, 0, 0);
+				
 				
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -142,8 +170,8 @@
 			}
 			
 			function draw() {
-				mat4.rotateY(wmat, 0.02);
-				mat4.rotateX(wmat, 0.02);
+				mat4.rotateY(wmat, 0.005);
+				mat4.rotateX(wmat, 0.005);
 				
 				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 				
@@ -151,7 +179,10 @@
 				
 				gl.uniformMatrix4fv(program.mWorld, false, wmat);
 				
-				
+				mat4.toInverseMat3(wmat, nmat);
+				mat3.transpose(nmat);
+				gl.uniformMatrix3fv(program.mNormal, false, nmat);
+
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebuffer);
 		        gl.drawElements(gl.TRIANGLES, ebuffer.numItems, gl.UNSIGNED_SHORT, 0);
 				

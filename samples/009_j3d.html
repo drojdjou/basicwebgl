@@ -1,0 +1,48 @@
+<html> 
+<head> 
+<script type="text/javascript" src="lib/j3d.js"></script>
+
+<script>
+	var engine, cube;
+	
+	function init() {		
+		engine = new J3D.Engine();
+		engine.setClearColor(J3D.Color.white);
+				
+		cube = new J3D.Transform();
+		J3D.Loader.loadJSON("http://localhost/basicwebgl/samples/lib/cube.json", function(j) {  cube.mesh = new J3D.Mesh(j); } );
+		//J3D.Loader.loadJSON("lib/cube.json", function(j) {  cube.mesh = new J3D.Mesh(j); } );				
+		cube.renderer = new J3D.Normal2Color();		
+		
+		var camera = new J3D.Camera(45);
+		camera.transform.position.z = 4;
+		engine.camera = camera;
+		engine.scene.add(camera.transform, cube);
+		draw();
+	}
+	
+	function draw() {
+		requestAnimationFrame(draw);
+		cube.rotation.x += Math.PI * J3D.Time.deltaTime / 6000;
+		cube.rotation.y += Math.PI/2 * J3D.Time.deltaTime / 3000;
+		engine.render();
+	}
+	
+</script>
+
+</head> 
+<body onload="init();">
+</body> 
+</html> 
+
+
+
+
+
+
+
+
+
+
+
+
