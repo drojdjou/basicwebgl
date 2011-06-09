@@ -98,6 +98,13 @@ var TextScene = {
 "transforms": [
 	
 	{
+		"name": "camera",
+		"position": [ 0,0,-0.5 ],
+		"rotation": [ 0,3.141592,0 ],
+		"camera": "camera"
+	},
+	
+	{
 		"name": "sun",
 		"position": [ 0,0,0.01425409 ],
 		"rotation": [ -0.8351003,-3.136525,0.2129833 ],
@@ -122,7 +129,7 @@ var TextScene = {
 	{
 		"name": "ring2",
 		"parent": "ring1",
-		"position": [ 0,0,0 ],
+		"position": [ 0,0,0.0577724 ],
 		"rotation": [ 0,0,0 ],
 		"renderer": "orange",
 		"mesh": "ring2"
@@ -131,7 +138,7 @@ var TextScene = {
 	{
 		"name": "ring3",
 		"parent": "ring2",
-		"position": [ 0,0,0 ],
+		"position": [ 0,0,0.05319142 ],
 		"rotation": [ 0,0,0 ],
 		"renderer": "yellow",
 		"mesh": "ring3"
@@ -140,7 +147,7 @@ var TextScene = {
 	{
 		"name": "ring4",
 		"parent": "ring3",
-		"position": [ 0,0,0 ],
+		"position": [ 0,0,0.04952693 ],
 		"rotation": [ 0,0,0 ],
 		"renderer": "light_green",
 		"mesh": "ring4"
@@ -149,7 +156,7 @@ var TextScene = {
 	{
 		"name": "ring5",
 		"parent": "ring4",
-		"position": [ 0,0,0 ],
+		"position": [ 0,0,0.05502987 ],
 		"rotation": [ 0,0,0 ],
 		"renderer": "green",
 		"mesh": "ring5"
@@ -158,7 +165,7 @@ var TextScene = {
 	{
 		"name": "ring6",
 		"parent": "ring5",
-		"position": [ 0,0,0 ],
+		"position": [ 0,0,0.05502987 ],
 		"rotation": [ 0,0,0 ],
 		"renderer": "blue",
 		"mesh": "ring6"
@@ -167,7 +174,7 @@ var TextScene = {
 	{
 		"name": "ring7",
 		"parent": "ring6",
-		"position": [ 0,0,0 ],
+		"position": [ 0,0,0.05502987 ],
 		"rotation": [ 0,0,0 ],
 		"renderer": "violet",
 		"mesh": "ring7"
@@ -180,13 +187,6 @@ var TextScene = {
 		"rotation": [ 0,0,0 ],
 		"renderer": "grey",
 		"mesh": "text"
-	},
-	
-	{
-		"name": "camera",
-		"position": [ 0,0,-0.5 ],
-		"rotation": [ 0,3.141592,0 ],
-		"camera": "camera"
 	}
 
 ]
